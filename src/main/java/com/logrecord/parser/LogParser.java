@@ -1,10 +1,7 @@
 package com.logrecord.parser;
 
 import lombok.Data;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
@@ -16,17 +13,17 @@ import java.util.Map;
  */
 @Data
 public class LogParser {
-    private final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
+    private final LogRecordEvaluation logRecordEvaluation = new LogRecordEvaluation();
 
-    private final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
     private final ParserContext parserContext = ParserContext.TEMPLATE_EXPRESSION;
 
-    public Object parse(String expression,LogEvaluationContext context) {
-        return spelExpressionParser.parseExpression(expression).getValue(context);
+    public Object parse(String expression,LogEvaluationContext context,LogRootObject rootObject) {
+        return logRecordEvaluation.parseExpression(rootObject.getMethod(),rootObject.getTargetClass(),
+                expression,context);
     }
 
     public Object parseTemplate(String expression,LogEvaluationContext context) {
-        return spelExpressionParser.parseExpression(expression,parserContext).getValue(context);
+        return logRecordEvaluation.parseExpression(expression,context);
     }
 
     public void refreshContext(LogEvaluationContext context) {

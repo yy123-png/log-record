@@ -48,13 +48,13 @@ public class LogAspect {
         LogRootObject rootObject = new LogRootObject(method, targetClass, args);
         LogRecordContext.putVars(LogRecordContext.ROOT_OBJECT, rootObject);
 
-        LogEvaluationContext context = new LogEvaluationContext(rootObject, logParser.getParameterNameDiscoverer());
+        LogEvaluationContext context = new LogEvaluationContext(rootObject);
 
         LogRecordAnnotation annotation = method.getAnnotation(LogRecordAnnotation.class);
 
         if (annotation.needOld()) {
             // 需要查询旧数据
-            Object actualBizNo = logParser.parse(annotation.bizNo(), context);
+            Object actualBizNo = logParser.parse(annotation.bizNo(), context,rootObject);
             LogRecordContext.putVars(LogRecordContext.BIZ_NO, actualBizNo);
 
             Object oldData = queryOldExecutor.execute(annotation.serviceKey(), actualBizNo);
